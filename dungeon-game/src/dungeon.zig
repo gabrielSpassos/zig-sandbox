@@ -10,7 +10,7 @@ pub fn main() !void {
     };
 
     var dungeon2 = [_][1]i32{
-        [_]i32{ 0 },
+        [_]i32{0},
     };
 
     const result1 = try calculateMinimumHP(allocator, &dungeon1);
@@ -35,7 +35,7 @@ fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
         allocator.free(dp);
     }
 
-    for (dp) |*row_ptr, i| {
+    for (0.., dp) |i, *row_ptr| {
         row_ptr.* = try allocator.alloc(i32, n);
         for (dp[i]) |*cell| {
             cell.* = 0;
@@ -45,28 +45,25 @@ fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
     std.debug.print("Start new board: ", .{});
     printDungeon(dp);
 
-    dp[m-1][n-1] = std.math.max(1, 1 - dungeon[m-1][n-1]);
+    dp[m - 1][n - 1] = std.math.max(1, 1 - dungeon[m - 1][n - 1]);
     std.debug.print("Fill last cell: ", .{});
     printDungeon(dp);
 
     for (i32(m) - 2..0) |i| {
-        dp[@intCast(usize, i)][n-1] = std.math.max(1, dp[@intCast(usize, i+1)][n-1] - dungeon[@intCast(usize, i)][n-1]);
+        dp[@intCast(usize, i)][n - 1] = std.math.max(1, dp[@intCast(usize, i + 1)][n - 1] - dungeon[@intCast(usize, i)][n - 1]);
     }
     std.debug.print("Fill last column: ", .{});
     printDungeon(dp);
 
     for (i32(n) - 2..0) |j| {
-        dp[m-1][@intCast(usize, j)] = std.math.max(1, dp[m-1][@intCast(usize, j+1)] - dungeon[m-1][@intCast(usize, j)]);
+        dp[m - 1][@intCast(usize, j)] = std.math.max(1, dp[m - 1][@intCast(usize, j + 1)] - dungeon[m - 1][@intCast(usize, j)]);
     }
     std.debug.print("Fill last row: ", .{});
     printDungeon(dp);
 
     for (i32(m) - 2..0) |i| {
         for (i32(n) - 2..0) |j| {
-            const minHealthOnExit = std.math.min(
-                dp[@intCast(usize, i+1)][@intCast(usize, j)],
-                dp[@intCast(usize, i)][@intCast(usize, j+1)]
-            );
+            const minHealthOnExit = std.math.min(dp[@intCast(usize, i + 1)][@intCast(usize, j)], dp[@intCast(usize, i)][@intCast(usize, j + 1)]);
             dp[@intCast(usize, i)][@intCast(usize, j)] = std.math.max(1, minHealthOnExit - dungeon[@intCast(usize, i)][@intCast(usize, j)]);
         }
     }
