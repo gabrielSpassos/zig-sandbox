@@ -8,5 +8,8 @@ pub fn main() !void {
     print("x: {}\n", .{x});
 
     const y: u8 = @intCast(x);
-    print("cast x: {}\n", .{y});
+    print("cast y: {}\n", .{y});
+
+    const z: usize = @intCast(x);
+    print("cast z: {}\n", .{z});
 }
