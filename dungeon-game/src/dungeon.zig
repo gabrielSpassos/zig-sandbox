@@ -45,26 +45,33 @@ fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
     std.debug.print("Start new board: ", .{});
     printDungeon(dp);
 
-    dp[m - 1][n - 1] = std.math.max(1, 1 - dungeon[m - 1][n - 1]);
+    dp[m - 1][n - 1] = max(1, 1 - dungeon[m - 1][n - 1]);
     std.debug.print("Fill last cell: ", .{});
     printDungeon(dp);
 
-    for (i32(m) - 2..0) |i| {
-        dp[@intCast(usize, i)][n - 1] = std.math.max(1, dp[@intCast(usize, i + 1)][n - 1] - dungeon[@intCast(usize, i)][n - 1]);
+    //*
+    //var i: i32 = @intCast(m) - 2;
+    //while (i >= 0) : (i -= 1) {
+    //    std.debug.print("i = {}\n", .{i});
+    //}
+    //
+
+    for (@as(i32, m) - 2..0) |i| {
+        dp[@intCast(i)][n - 1] = max(1, dp[@intCast(i + 1)][n - 1] - dungeon[@intCast(i)][n - 1]);
     }
     std.debug.print("Fill last column: ", .{});
     printDungeon(dp);
 
     for (i32(n) - 2..0) |j| {
-        dp[m - 1][@intCast(usize, j)] = std.math.max(1, dp[m - 1][@intCast(usize, j + 1)] - dungeon[m - 1][@intCast(usize, j)]);
+        dp[m - 1][@intCast(j)] = std.math.max(1, dp[m - 1][@intCast(j + 1)] - dungeon[m - 1][@intCast(j)]);
     }
     std.debug.print("Fill last row: ", .{});
     printDungeon(dp);
 
     for (i32(m) - 2..0) |i| {
         for (i32(n) - 2..0) |j| {
-            const minHealthOnExit = std.math.min(dp[@intCast(usize, i + 1)][@intCast(usize, j)], dp[@intCast(usize, i)][@intCast(usize, j + 1)]);
-            dp[@intCast(usize, i)][@intCast(usize, j)] = std.math.max(1, minHealthOnExit - dungeon[@intCast(usize, i)][@intCast(usize, j)]);
+            const minHealthOnExit = std.math.min(dp[@intCast(i + 1)][@intCast(j)], dp[@intCast(i)][@intCast(j + 1)]);
+            dp[@intCast(i)][@intCast(j)] = std.math.max(1, minHealthOnExit - dungeon[@intCast(i)][@intCast(j)]);
         }
     }
     std.debug.print("Remaining board: ", .{});
@@ -83,4 +90,12 @@ fn printDungeon(board: anytype) void {
         stdout.print("]\n", .{}) catch {};
     }
     stdout.print("\n", .{}) catch {};
+}
+
+fn max(a: i32, b: i32) i32 {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
 }
