@@ -1,30 +1,30 @@
 const std = @import("std");
+const print = std.debug.print;
 
 pub fn main() !void {
-    const allocator = std.heap.page_allocator;
-
-    var dungeon1 = [_][3]i32{
+    const dungeon1 = [_][3]i32{
         [_]i32{ -2, -3, 3 },
         [_]i32{ -5, -10, 1 },
         [_]i32{ 10, 30, -5 },
     };
 
-    var dungeon2 = [_][1]i32{
+    const dungeon2 = [_][1]i32{
         [_]i32{0},
     };
 
-    const result1 = try calculateMinimumHP(allocator, &dungeon1);
-    std.debug.print("Minimum initial health: {}\n", .{result1});
+    const result1 = try calculateMinimumHP(&dungeon1);
+    print("Minimum initial health: {}\n", .{result1});
 
-    const result2 = try calculateMinimumHP(allocator, &dungeon2);
-    std.debug.print("Minimum initial health: {}\n", .{result2});
+    const result2 = try calculateMinimumHP(&dungeon2);
+    print("Minimum initial health: {}\n", .{result2});
 }
 
-fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
+fn calculateMinimumHP(dungeon: anytype) !i32 {
+    const allocator = std.heap.page_allocator;
     const m: i32 = dungeon.len;
     const n: i32 = dungeon[0].len;
 
-    std.debug.print("Dungeon: ", .{});
+    print("Dungeon: ", .{});
     printDungeon(dungeon);
 
     var dp = try allocator.alloc([]i32, m);
@@ -42,11 +42,11 @@ fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
         }
     }
 
-    std.debug.print("Start new board: ", .{});
+    print("Start new board: ", .{});
     printDungeon(dp);
 
     dp[m - 1][n - 1] = max(1, 1 - dungeon[m - 1][n - 1]);
-    std.debug.print("Fill last cell: ", .{});
+    print("Fill last cell: ", .{});
     printDungeon(dp);
 
     var i: i32 = m - 2;
@@ -54,7 +54,7 @@ fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
         dp[@intCast(i)][n - 1] = max(1, dp[@intCast(i + 1)][n - 1] - dungeon[@intCast(i)][n - 1]);
     }
 
-    std.debug.print("Fill last column: ", .{});
+    print("Fill last column: ", .{});
     printDungeon(dp);
 
     i = n - 2;
@@ -62,7 +62,7 @@ fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
         dp[m - 1][@intCast(i)] = max(1, dp[m - 1][@intCast(i + 1)] - dungeon[m - 1][@intCast(i)]);
     }
 
-    std.debug.print("Fill last row: ", .{});
+    print("Fill last row: ", .{});
     printDungeon(dp);
 
     i = m - 2;
@@ -74,7 +74,7 @@ fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
         }
     }
 
-    std.debug.print("Remaining board: ", .{});
+    print("Remaining board: ", .{});
     printDungeon(dp);
 
     return dp[0][0];
@@ -136,4 +136,26 @@ test "should return 8 as min" {
 test "should return 9 as min" {
     const min_value = min(9, 9);
     try std.testing.expectEqual(9, min_value);
+}
+
+test "should return 7 as hp" {
+    const dungeon1 = [_][3]i32{
+        [_]i32{ -2, -3, 3 },
+        [_]i32{ -5, -10, 1 },
+        [_]i32{ 10, 30, -5 },
+    };
+
+    const min_hp = try calculateMinimumHP(dungeon1);
+
+    try std.testing.expectEqual(7, min_hp);
+}
+
+test "should return 1 as hp" {
+    const dungeon2 = [_][1]i32{
+        [_]i32{0},
+    };
+
+    const min_hp = try calculateMinimumHP(dungeon2);
+
+    try std.testing.expectEqual(1, min_hp);
 }
