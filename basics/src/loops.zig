@@ -24,4 +24,10 @@ pub fn main() !void {
     }
 
     for (array) |_| {}
+
+    const m: i32 = 5;
+    var i: i32 = m - 2;
+    while (i >= 0) : (i -= 1) {
+        std.debug.print("Index: {}\n", .{i});
+    }
 }
