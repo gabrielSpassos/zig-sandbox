@@ -21,8 +21,8 @@ pub fn main() !void {
 }
 
 fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
-    const m = dungeon.len;
-    const n = dungeon[0].len;
+    const m: i32 = dungeon.len;
+    const n: i32 = dungeon[0].len;
 
     std.debug.print("Dungeon: ", .{});
     printDungeon(dungeon);
@@ -49,31 +49,31 @@ fn calculateMinimumHP(allocator: std.mem.Allocator, dungeon: anytype) !i32 {
     std.debug.print("Fill last cell: ", .{});
     printDungeon(dp);
 
-    //*
-    //var i: i32 = @intCast(m) - 2;
-    //while (i >= 0) : (i -= 1) {
-    //    std.debug.print("i = {}\n", .{i});
-    //}
-    //
-
-    for (@as(i32, m) - 2..0) |i| {
+    var i: i32 = m - 2;
+    while (i >= 0) : (i -= 1) {
         dp[@intCast(i)][n - 1] = max(1, dp[@intCast(i + 1)][n - 1] - dungeon[@intCast(i)][n - 1]);
     }
+
     std.debug.print("Fill last column: ", .{});
     printDungeon(dp);
 
-    for (i32(n) - 2..0) |j| {
-        dp[m - 1][@intCast(j)] = std.math.max(1, dp[m - 1][@intCast(j + 1)] - dungeon[m - 1][@intCast(j)]);
+    i = n - 2;
+    while (i >= 0) : (i -= 1) {
+        dp[m - 1][@intCast(i)] = max(1, dp[m - 1][@intCast(i + 1)] - dungeon[m - 1][@intCast(i)]);
     }
+
     std.debug.print("Fill last row: ", .{});
     printDungeon(dp);
 
-    for (i32(m) - 2..0) |i| {
-        for (i32(n) - 2..0) |j| {
-            const minHealthOnExit = std.math.min(dp[@intCast(i + 1)][@intCast(j)], dp[@intCast(i)][@intCast(j + 1)]);
-            dp[@intCast(i)][@intCast(j)] = std.math.max(1, minHealthOnExit - dungeon[@intCast(i)][@intCast(j)]);
+    i = m - 2;
+    while (i >= 0) : (i -= 1) {
+        var j: i32 = n - 2;
+        while (j >= 0) : (j -= 1) {
+            const minHealthOnExit = min(dp[@intCast(i + 1)][@intCast(j)], dp[@intCast(i)][@intCast(j + 1)]);
+            dp[@intCast(i)][@intCast(j)] = max(1, minHealthOnExit - dungeon[@intCast(i)][@intCast(j)]);
         }
     }
+
     std.debug.print("Remaining board: ", .{});
     printDungeon(dp);
 
@@ -94,6 +94,14 @@ fn printDungeon(board: anytype) void {
 
 fn max(a: i32, b: i32) i32 {
     if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
+}
+
+fn min(a: i32, b: i32) i32 {
+    if (a < b) {
         return a;
     } else {
         return b;
