@@ -107,3 +107,33 @@ fn min(a: i32, b: i32) i32 {
         return b;
     }
 }
+
+test "should return 7 as max" {
+    const max_value = max(7, 6);
+    try std.testing.expectEqual(7, max_value);
+}
+
+test "should return 8 as max" {
+    const max_value = max(7, 8);
+    try std.testing.expectEqual(8, max_value);
+}
+
+test "should return 9 as max" {
+    const max_value = max(9, 9);
+    try std.testing.expectEqual(9, max_value);
+}
+
+test "should return 7 as min" {
+    const min_value = min(7, 8);
+    try std.testing.expectEqual(7, min_value);
+}
+
+test "should return 8 as min" {
+    const min_value = min(9, 8);
+    try std.testing.expectEqual(8, min_value);
+}
+
+test "should return 9 as min" {
+    const min_value = min(9, 9);
+    try std.testing.expectEqual(9, min_value);
+}
