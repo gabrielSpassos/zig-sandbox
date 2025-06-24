@@ -12,4 +12,7 @@ pub fn main() !void {
 
     const z: usize = @intCast(x);
     print("cast z: {}\n", .{z});
+
+    const a: i32 = @intCast(x);
+    print("cast a: {}\n", .{a});
 }
