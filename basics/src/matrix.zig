@@ -11,4 +11,19 @@ pub fn main() !void {
     };
 
     print("Matrix: {any}", .{matrix});
+
+    const matrix_size = try get_user_matrix_size();
+    print("Matrix size: {s}\n", .{matrix_size});
+}
+
+fn get_user_matrix_size() !i64 {
+    print("Type matrix[m][m] size: ", .{});
+
+    var input: [10]u8 = undefined;
+    const stdin = std.io.getStdIn().reader();
+
+    _ = try stdin.readUntilDelimiter(&input, '\n');
+
+    print("The user entered: {s}\n", .{input});
+    return std.fmt.parseInt(i64, &input, 10);
 }
